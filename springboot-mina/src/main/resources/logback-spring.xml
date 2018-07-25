@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<property name="LOG_HOME" value="c:/logs"></property>
+
+	<property name="consoleLayoutPattern"
+		value="%-20(%d{yyyyMMdd_HH:mm:ss.SSS} [%logger][%thread] [%-4relative]) [%X{hostName} %X{requestId} %X{processId} %X{service.timing} ][%level] %msg%n" />
+
+	<property name="fileLayoutPattern"
+		value="%-20(%d{yyyyMMdd_HH:mm:ss.SSS} [%logger{10}][%thread] [%-4relative]) [%X{hostName} %X{requestId} %X{processId} %X{service.timing} ][%level] %msg%n" />
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>${consoleLayoutPattern}</pattern>
+		</layout>
+	</appender>
+
+	<appender name="TCP_WARN_FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_HOME}/tcp.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/tcp_%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+			<maxHistory>10</maxHistory>
+		</rollingPolicy>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>${fileLayoutPattern}</Pattern>
+		</layout>
+	</appender>
+
+	<appender name="ALL_ERROR_FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_HOME}/error.log</file>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>ERROR</level>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/error_%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+			<maxHistory>10</maxHistory>
+		</rollingPolicy>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>${fileLayoutPattern}</Pattern>
+		</layout>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>error</level>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+	<appender name="WEB_WARN_FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_HOME}/web.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_HOME}/web_%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+			<maxHistory>10</maxHistory>
+		</rollingPolicy>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>${fileLayoutPattern}</Pattern>
+		</layout>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>warn</level>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+	<!-- <root level="INFO"> <appender-ref ref="ERROR_FILE" level="ERROR" /> 
+		<appender-ref ref="WARN_FILE" level="WARN" /> <appender-ref ref="STDOUT" 
+		/> </root> -->
+	<!---->
+	<root level="INFO">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="ALL_ERROR_FILE" level="ERROR" />
+	</root>
+	
+	<logger name="com.example.demo.mina" level="warn" additivity="false">
+		<appender-ref ref="TCP_WARN_FILE" />
+	</logger>
+	<logger name="com.example.demo.service.Impl.WebLogServiceImpl" level="WARN" additivity="false">
+		<appender-ref ref="WEB_WARN_FILE" />
+	</logger>
+	<!--
+	<logger name="com.example.demo.mina" level="ERROR" additivity="false">
+		<appender-ref ref="ERROR_FILE" />
+	</logger>
+	-->
+
+</configuration>
